@@ -1,10 +1,11 @@
 package router
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"graphql/pkg/controller/graphql"
 )
 
 func InitRoute(route *gin.Engine) {
-	fmt.Println(route)
+	route.GET("/graphal", graphql.Handler())
+	route.POST("/graphal", graphql.Handler())
 }

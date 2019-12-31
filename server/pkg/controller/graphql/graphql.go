@@ -8,7 +8,8 @@ import (
 	"log"
 )
 
-func GraphqlHandler () gin.HandlerFunc {
+func Handler () gin.HandlerFunc {
+
 	graphqlScheme, err := graphql.NewSchema(graphql.SchemaConfig{
 		Query: scheme.QueryType,
 	})

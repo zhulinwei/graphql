@@ -5,33 +5,44 @@ import (
 	"graphql/pkg/model"
 )
 
-var userType = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "user",
-	Description: "user model",
-	Fields: graphql.Fields{
-		"id": &graphql.Field{
-			Type: graphql.Int,
+var UserStatusEnumType = graphql.NewEnum(graphql.EnumConfig{
+	Name:        "UserStatusEnum",
+	Description: "user status enum",
+	Values: graphql.EnumValueConfigMap{
+		"EnableUser": &graphql.EnumValueConfig{
+			Value:       model.EnableStatus,
+			Description: "user enable",
 		},
-		"name": &graphql.Field{
-			Type: graphql.String,
+		"DisableUser": &graphql.EnumValueConfig{
+			Value:       model.DisableStatus,
+			Description: "user disable",
 		},
 	},
 })
 
-var queryUser = graphql.Field{
-	Name:"QueryUser",
-	Description:"Query User",
-	Type:graphql.NewList(userType),
-	Args:graphql.FieldConfigArgument{
-		"id": &graphql.ArgumentConfig{
-			Type:graphql.Int,
+var UserType = graphql.NewObject(graphql.ObjectConfig{
+	Name:        "user",
+	Description: "user info",
+	Fields: graphql.Fields{
+		"id": &graphql.Field{
+			Type:        graphql.Int,
+			Description: "user id",
 		},
-		"name": &graphql.ArgumentConfig{
-			Type:graphql.String,
+		"name": &graphql.Field{
+			Type:        graphql.String,
+			Description: "username",
+		},
+		"email": &graphql.Field{
+			Type:        graphql.String,
+			Description: "user email",
+		},
+		"phone": &graphql.Field{
+			Type:        graphql.String,
+			Description: "user phone",
+		},
+		"status": &graphql.Field{
+			Type:        UserStatusEnumType,
+			Description: "user status",
 		},
 	},
-	Resolve: func(params graphql.ResolveParams) (i interface{}, e error) {
-		id, _ := params.Args["id"].(int)
-		name, _:= params.Args["name"].(string)
-	},
-}
+})

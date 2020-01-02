@@ -5,21 +5,6 @@ import (
 	"graphql/pkg/model"
 )
 
-var UserStatusEnumType = graphql.NewEnum(graphql.EnumConfig{
-	Name:        "UserStatusEnum",
-	Description: "user status enum",
-	Values: graphql.EnumValueConfigMap{
-		"EnableUser": &graphql.EnumValueConfig{
-			Value:       model.EnableStatus,
-			Description: "user enable",
-		},
-		"DisableUser": &graphql.EnumValueConfig{
-			Value:       model.DisableStatus,
-			Description: "user disable",
-		},
-	},
-})
-
 var UserType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "user",
 	Description: "user info",
@@ -43,6 +28,21 @@ var UserType = graphql.NewObject(graphql.ObjectConfig{
 		"status": &graphql.Field{
 			Type:        UserStatusEnumType,
 			Description: "user status",
+		},
+	},
+})
+
+var UserStatusEnumType = graphql.NewEnum(graphql.EnumConfig{
+	Name:        "UserStatusEnum",
+	Description: "user status enum",
+	Values: graphql.EnumValueConfigMap{
+		"EnableUser": &graphql.EnumValueConfig{
+			Value:       model.EnableStatus,
+			Description: "user enable",
+		},
+		"DisableUser": &graphql.EnumValueConfig{
+			Value:       model.DisableStatus,
+			Description: "user disable",
 		},
 	},
 })

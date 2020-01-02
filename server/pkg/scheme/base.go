@@ -8,7 +8,7 @@ import (
 var QueryType = graphql.NewObject(graphql.ObjectConfig{
 	Name:"Query",
 	Fields:graphql.Fields{
-		"User": &graphql.Field{
+		"user": &graphql.Field{
 			Type:UserType,
 			Args:graphql.FieldConfigArgument{
 				"id": &graphql.ArgumentConfig{
@@ -16,7 +16,10 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (result interface{}, err error) {
-				return model.User{}, nil
+				return model.User{
+					Id:   123,
+					Name: "tony",
+				}, nil
 			},
 		},
 	},

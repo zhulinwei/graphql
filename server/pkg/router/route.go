@@ -6,6 +6,6 @@ import (
 )
 
 func InitRoute(route *gin.Engine) {
-	route.GET("/graphal", graphql.Handler())
-	route.POST("/graphal", graphql.Handler())
+	route.GET("/graphql", graphql.Handler())
+	route.POST("/graphql", graphql.Handler())
 }

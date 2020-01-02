@@ -22,7 +22,7 @@ func Handler() gin.HandlerFunc {
 		handler.New(&handler.Config{
 			// 定义scheme
 			Schema: &graphqlScheme,
-			// 启用GraphiQL客户端
+			// 启动GraphiQL客户端
 			GraphiQL: true,
 		}).ServeHTTP(context.Writer, context.Request)
 	}

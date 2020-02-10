@@ -32,7 +32,7 @@ function QueyrUser (userId) {
 ```
 最后再通过查询拿到精确的用户数据，如：
 
-```json
+```
 {
     user(id: 10) {
         name
@@ -90,10 +90,6 @@ var UserStatusEnumType = graphql.NewEnum(graphql.EnumConfig{
 	},
 })
 ```
-缺点：
-- 代码复杂详细程度高，繁琐且容易出错
-- 大量使用接口和反射，使得编译时丧失类型安全性
-
 ### 执行查询
 
 ```golang
@@ -112,17 +108,28 @@ var UserField = &graphql.Field{
 }
 ```
 
-缺点：
-- 我们需要处理自己从map[string]interface{}拆包解析args
-- id可能不是字符串
-- 依赖关系处理麻烦
-
-
 ## gengql
-在定义完GraphQL类型后，gengql可以自动生成代码，快速构建应用程序，在这里我们依然复用第一节中的Graphql类型示例。
+gengql可以自动生成代码，快速构建应用程序，我们先创建项目框架：
+``` sh
+# 创建项目文件夹
+mkdir gqlgen-demo
+cd gqlgen-demo
+# 初始化为Go模块
+go mod init gqlgen-demo
+# 初始化项目框架
+go run github.com/99designs/gqlgen init
+```
+
+这样就创建了一个空框架，其中包含文件如下：
+- server/server.go: GraphQL服务器的入口点
+- gqlgen.yml: gqlgen配置文件，用于控制所生成代码的旋钮
+- generated.go: GraphQL执行运行时，生成的大部分代码
+- models_gen.go: 生成GraphQL所需的模型，通常我们会使用自己的模型来覆盖它们
+- resolver.go: 执行查询文件，应用程序代码所在的位置，generated.go将调用此方法以获取用户请求的数据
+- schema.graphql: 存放GraphQL类型的文件
 
 ### 配置文件
-我们首先需要定义gengql自动生成代码的配置文件，示例如下：
+在这里我们依然复用第一节中的Graphql类型示例，将其放入schema.graphql中，同时我们还可以自定义一下生成的文件其存放的路径，如：
 ```
 schema:
 - "pkg/schema/**/*.graphql"
@@ -136,20 +143,54 @@ resolver:
 autobind: []
 ```
 
-定义完成后执行命令：
+随后项目更新框架：
 ```sh
 go run github.com/99designs/gqlgen
 ```
 
-经过上述步骤gqlgen已经自动帮我们生成好Graphql类型的定义
-
 ### 添加解析
+gengql已经帮我们生成GraphQL服务器所需的基本代码，这个时候需要关注resolver.go文件，其内容如下：
 
-我们只需要在resolver文件中添加user的具体实现
 
 ```golang
-func (r *queryResolver) User(ctx context.Context, id int) (*model.User, error) {
-    // do something
+package controller
+ 
+import (
+    "context"
+    "graphql/pkg/model"
+    "graphql/pkg/util"
+)
+ 
+// THIS CODE IS A STARTING POINT ONLY. IT WILL NOT BE UPDATED WITH SCHEMA CHANGES.
+ 
+type Resolver struct{}
+ 
+func (r *Resolver) Query() util.QueryResolver {
+    return &queryResolver{r}
 }
-
+ 
+type queryResolver struct{ *Resolver }
+ 
+func (r *queryResolver) User(ctx context.Context, id int) (*model.User, error) {
+    panic("not implemented")
+}
 ```
+我们现在只需要添加查询时具体的实现即可，在这里是修改上述文件第19行中方法的内容，如：
+```golang
+func (r *queryResolver) User(ctx context.Context, id int) (*model.User, error) {
+    return service.findUserById(id), nil
+}
+```
+
+## 总结
+在使用graphql-go时发现一些比较突出的问题，比如在在定义类型时：
+- 代码复杂详细程度高，繁琐且容易出错
+- 大量使用接口和反射，使得编译时丧失类型安全性
+在执行查询时：
+- 我们需要处理自己从map[string]interface{}拆包解析参数
+- 依赖关系处理麻烦（无法较好的实现依赖注入）
+相比之下gengql在可用性和安全性上更佳：
+- 自动生成代码，避免繁杂的类型定义工作
+- 使用静态生成所有字段绑定和json序列化，替代反射
+- 不需要手动拆包解析参数
+- 查询执行文件resolver.go可以方便实现依赖注入

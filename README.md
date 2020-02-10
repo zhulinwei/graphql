@@ -184,9 +184,11 @@ func (r *queryResolver) User(ctx context.Context, id int) (*model.User, error) {
 在使用graphql-go时发现一些比较突出的问题，比如在在定义类型时：
 - 代码复杂详细程度高，繁琐且容易出错
 - 大量使用接口和反射，使得编译时丧失类型安全性
+
 在执行查询时：
 - 我们需要处理自己从map[string]interface{}拆包解析参数
 - 依赖关系处理麻烦（无法较好的实现依赖注入）
+
 相比之下gengql在可用性和安全性上更佳：
 - 自动生成代码，避免繁杂的类型定义工作
 - 使用静态生成所有字段绑定和json序列化，替代反射
